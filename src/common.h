@@ -16,7 +16,7 @@ enum class State : int
     ERASED,
 };
 
-enum class Keymode : int
+enum class KeyMode : int
 {
     NORMAL = 1,
     VIM
