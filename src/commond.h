@@ -22,3 +22,5 @@ private:
     int _nPreValue;
     int _nCurValue;
 };
+
+#endif
