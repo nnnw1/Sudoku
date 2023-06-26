@@ -353,3 +353,21 @@ void CScene::generate()
 
     return;
 }
+
+bool CScene::setPointValue(const point_t &stPoint, const int nValue)
+{
+    auto point = _map[stPoint.x + stPoint.y * 9];
+    if(State::ERASED == point.state)
+    {
+        _cur_point = stPoint;
+        setValue(nValue);
+        return true;
+    }
+    else
+        return false;
+}
+
+point_t CScene::getCurPoint()
+{
+    return _cur_point;
+}
