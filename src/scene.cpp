@@ -314,3 +314,42 @@ void CScene::play()
         }
     }
 }
+
+void CScene::generate()
+{
+    static char map_pattern[10][10] = {
+        "ighcabfde",
+        "cabfdeigh",
+        "fdeighcab",
+        "ghiabcdef",
+        "abcdefghi",
+        "defghiabc",
+        "higbcaefd",
+        "bcaefdhig",
+        "efdhigbca"};
+
+    std::vector<char> v = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'};
+
+    //generate map from char to number
+    std::unordered_map<char, int> hash_map;
+    for(int i=1; i <= 9; ++i)
+    {
+        int r = random(0, v.size() - 1);
+        hash_map[v[r]] = i;
+        v.erase(v.begin() + r);
+    }
+
+    for(int row = 0; row < 9; ++row)
+    {
+        for(int col = 0; col < 9; ++col)
+        {
+            point_t point = {row, col};
+            char key = map_pattern[row][col];
+            setValue(point, hash_map[key]);
+        }
+    }
+
+    assert(isComplete());
+
+    return;
+}
