@@ -75,8 +75,8 @@ public:
         if ((lhs.x == rhs.x) && (lhs.y == rhs.y))
             return false;
         else
-            return false;
+            return true;
     }
-}
+};
 
 #endif

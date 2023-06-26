@@ -5,7 +5,7 @@
 #include <vector>
 #include "common.h"
 #include "block.h"
-#include "commond.h"
+#include "command.h"
 
 class CScene
 {
@@ -41,7 +41,7 @@ private:
     point_t _cur_point;
     CBlock _column_block[9];
     CBlock _row_block[9];
-    CBlock _xy_block[9];
+    CBlock _xy_block[3][3];
     point_value_t _map[81];
 
     std::vector<CCommand> _vCommand;

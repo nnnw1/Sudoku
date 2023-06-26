@@ -27,7 +27,7 @@ void CScene::show() const
 
     printUnderLine();
 
-    for(int row = 0; row < _max_column; ++row)
+    for (int row = 0; row < _max_column; ++row)
     {
         CBlock block = _row_block[row];
         block.print();
@@ -37,22 +37,23 @@ void CScene::show() const
 
 void CScene::setMode(KeyMode mode)
 {
-    switch(mode)
+    switch (mode)
     {
-        case KeyMode::NORMAL:
-            keyMap = new Normal;
-            break;
+    case KeyMode::NORMAL:
+        keyMap = new Normal;
+        break;
 
-        case KeyMode::VIM:
-            keyMap = new Vim;
-            break;
+    case KeyMode::VIM:
+        keyMap = new Vim;
+        break;
     }
 }
 
 void CScene::printUnderLine(int line_no) const
 {
-    for(int column = 0; column < 9; ++column)
-        std::cout << "\u254B" << "\u2501" << ((_cur_point.y == line_no && _cur_point.x == column)?"^":"\u2501") << "\u2501";
+    for (int column = 0; column < 9; ++column)
+        std::cout << "\u254B"
+                  << "\u2501" << ((_cur_point.y == line_no && _cur_point.x == column) ? "^" : "\u2501") << "\u2501";
     std::cout << "\u254B" << std::endl;
 }
 
@@ -60,36 +61,36 @@ void CScene::init()
 {
     memset(_map, UNSELECTED, sizeof _map);
 
-    for(int col=0; col < _max_column; ++col)  //column_block refers to all of columns
+    for (int col = 0; col < _max_column; ++col) //column_block refers to all of columns
     {
         CBlock column_block;
 
-        for(int row=0; row < _max_column; ++row)
+        for (int row = 0; row < _max_column; ++row)
         {
             column_block.push_back(_map + row * 9 + col);
         }
         _column_block[col] = column_block;
     }
 
-    for(int row=0; row < _max_column; ++row)  //row_block refers to all of rows
+    for (int row = 0; row < _max_column; ++row) //row_block refers to all of rows
     {
         CBlock row_block;
 
-        for(int col=0; col < _max_column; ++col)
+        for (int col = 0; col < _max_column; ++col)
         {
             row_block.push_back(_map + row * 9 + col);
         }
         _row_block[row] = row_block;
     }
 
-    for(int block_index = 0; block_index < _max_column; ++block_index) //xy_block refers to all of grids, [row][col]
+    for (int block_index = 0; block_index < _max_column; ++block_index) //xy_block refers to all of grids, [row][col]
     {
         CBlock xy_block;
 
-        int xy_begin = block_index / 3 *27 + block_index % 3 * 3;
-        for(int i=0; i < 3; ++i)
+        int xy_begin = block_index / 3 * 27 + block_index % 3 * 3;
+        for (int i = 0; i < 3; ++i)
         {
-            for(int j=0; j < 3; ++j)
+            for (int j = 0; j < 3; ++j)
             {
                 xy_block.push_back(_map + xy_begin + i * 9 + j);
             }
@@ -103,17 +104,17 @@ void CScene::init()
 bool CScene::setCurValue(const int nCurValue, int &nLastValue)
 {
     auto point = _map[_cur_point.x + _cur_point.y * 9];
-    if(point.state == State::ERASED)
+    if (point.state == State::ERASED)
     {
         nLastValue = point.value;
         setValue(nCurValue);
         return true;
     }
-    else   
+    else
         return false;
 }
 
-void CScene::setValue(const point_t& p, const int value)
+void CScene::setValue(const point_t &p, const int value)
 {
     _map[p.x + p.y * 9].value = value;
 }
@@ -132,12 +133,12 @@ void CScene::eraseRandomGrids(const int count)
     point_value_t p = {UNSELECTED, State::ERASED};
 
     std::vector<int> v(81);
-    for(int i=0; i < 81; ++i)
+    for (int i = 0; i < 81; ++i)
     {
         v[i] = i;
     }
 
-    for(int i=0; i < count; ++i)
+    for (int i = 0; i < count; ++i)
     {
         int r = random(0, v.size() - 1);
         _map[v[r]] = p;
@@ -148,18 +149,18 @@ void CScene::eraseRandomGrids(const int count)
 bool CScene::isComplete()
 {
     //not complete if there is any block that is not full
-    for(size_t i=0; i < 81; ++i)
+    for (size_t i = 0; i < 81; ++i)
     {
-        if(_map[i].value == UNSELECTED)
+        if (_map[i].value == UNSELECTED)
             return false;
     }
 
     //the number in the block must be valid
-    for(int row=0; row < 9; ++row)
+    for (int row = 0; row < 9; ++row)
     {
-        for(int col = 0; col < 9; ++col)
+        for (int col = 0; col < 9; ++col)
         {
-            if(!_row_block[row].isValid() || !_column_block[col].isValid() || !_xy_block[row / 3][col / 3].isValid())
+            if (!_row_block[row].isValid() || !_column_block[col].isValid() || !_xy_block[row / 3][col / 3].isValid())
                 return false;
         }
     }
@@ -174,7 +175,7 @@ void CScene::save(const char *filename)
     fs.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
 
     //save _map
-    for(int i=0; i < 81; ++i)
+    for (int i = 0; i < 81; ++i)
     {
         fs << _map[i].value << ' ' << static_cast<int>(_map[i].state) << std::endl;
     }
@@ -184,7 +185,7 @@ void CScene::save(const char *filename)
 
     //save _vCommand
     fs << _vCommand.size() << std::endl;
-    for(CCommand command : _vCommand)
+    for (CCommand command : _vCommand)
     {
         point_t point = command.getPoint();
         fs << point.x << ' ' << point.y << ' ' << command.getPreValue() << ' ' << command.getCurValue() << std::endl;
@@ -200,7 +201,7 @@ void CScene::load(const char *filename)
     fs.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
 
     //load _map
-    for(int i=0; i < 81; ++i)
+    for (int i = 0; i < 81; ++i)
     {
         int tmpState;
         fs >> _map[i].value >> tmpState;
@@ -208,12 +209,12 @@ void CScene::load(const char *filename)
     }
 
     //load _cur_point
-    fs >>_cur_point.x >> _cur_point.y;
+    fs >> _cur_point.x >> _cur_point.y;
 
     //load _vCommand
     int commandSize;
     fs >> commandSize;
-    for(int i = 0; i < commandSize; ++i)
+    for (int i = 0; i < commandSize; ++i)
     {
         point_t point;
         int preValue, curValue;
@@ -227,13 +228,13 @@ void CScene::play()
     show();
 
     char key = '\0';
-    while(1)
+    while (1)
     {
         key = getch();
-        if(key >= '0' && key <= '9')
+        if (key >= '0' && key <= '9')
         {
             CCommand oCommand(this);
-            if(!oCommand.execute(key - '0'))
+            if (!oCommand.execute(key - '0'))
             {
                 std::cout << "this number can't be modified." << std::endl;
             }
@@ -245,16 +246,16 @@ void CScene::play()
             }
         }
 
-        if(key == keyMap->ESC)
+        if (key == keyMap->ESC)
         {
             message("quit game ? [Y/N]");
             std::string strInput;
             std::cin >> strInput;
-            if(strInput[0] == 'y' || strInput[0] == 'Y')
+            if (strInput[0] == 'y' || strInput[0] == 'Y')
             {
                 message("do you want to save the game progress > [Y/N]");
                 std::cin >> strInput;
-                if(strInput[0] == 'y' || strInput[0] == 'Y')
+                if (strInput[0] == 'y' || strInput[0] == 'Y')
                 {
                     message("input path of the progress file: ", false);
                     std::cin >> strInput;
@@ -267,43 +268,43 @@ void CScene::play()
                 message("continue.");
             }
         }
-        else if(key == keyMap->U)
+        else if (key == keyMap->U)
         {
-            if(_vCommand.empty())
+            if (_vCommand.empty())
                 message("no more action to undo.");
             else
             {
-                CCommand& oCommand = _vCommand.back();
+                CCommand &oCommand = _vCommand.back();
                 oCommand.undo();
                 _vCommand.pop_back();
                 show();
             }
         }
-        else if(key == keyMap->LEFT)
+        else if (key == keyMap->LEFT)
         {
             _cur_point.x = (_cur_point.x - 1) < 0 ? 0 : _cur_point.x - 1;
             show();
         }
-        else if(key == keyMap->RIGHT)
+        else if (key == keyMap->RIGHT)
         {
-            _cur_point.x = (_cur_point.x + 1) > 8 ? 8 : _cur_point.x -+1;
+            _cur_point.x = (_cur_point.x + 1) > 8 ? 8 : _cur_point.x + 1;
             show();
         }
-        else if(key == keyMap->DOWN)
+        else if (key == keyMap->DOWN)
         {
             _cur_point.y = (_cur_point.y + 1) > 8 ? 8 : _cur_point.y + 1;
             show();
         }
-        else if(key == keyMap->UP)
+        else if (key == keyMap->UP)
         {
             _cur_point.y = (_cur_point.y - 1) < 0 ? 0 : _cur_point.y - 1;
             show();
         }
-        else if(key == keyMap->ENTER)
+        else if (key == keyMap->ENTER)
         {
-            if(isComplete())
+            if (isComplete())
             {
-                message("congratilations! you win!");
+                message("congratulations! you win!");
                 getchar();
                 exit(0);
             }
@@ -332,16 +333,16 @@ void CScene::generate()
 
     //generate map from char to number
     std::unordered_map<char, int> hash_map;
-    for(int i=1; i <= 9; ++i)
+    for (int i = 1; i <= 9; ++i)
     {
         int r = random(0, v.size() - 1);
         hash_map[v[r]] = i;
         v.erase(v.begin() + r);
     }
 
-    for(int row = 0; row < 9; ++row)
+    for (int row = 0; row < 9; ++row)
     {
-        for(int col = 0; col < 9; ++col)
+        for (int col = 0; col < 9; ++col)
         {
             point_t point = {row, col};
             char key = map_pattern[row][col];
@@ -357,7 +358,7 @@ void CScene::generate()
 bool CScene::setPointValue(const point_t &stPoint, const int nValue)
 {
     auto point = _map[stPoint.x + stPoint.y * 9];
-    if(State::ERASED == point.state)
+    if (State::ERASED == point.state)
     {
         _cur_point = stPoint;
         setValue(nValue);

@@ -1,5 +1,5 @@
 #include "scene.h"
-#include "commond.h"
+#include "command.h"
 
 CCommand::CCommand(CScene *pOwner) : _pOwner(pOwner)
 {
