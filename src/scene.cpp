@@ -124,3 +124,45 @@ void CScene::setValue(const int value)
     this->setValue(p, value);
 }
 
+/*
+@function select some (count) grids to clear
+*/
+void CScene::eraseRandomGrids(const int count)
+{
+    point_value_t p = {UNSELECTED, State::ERASED};
+
+    std::vector<int> v(81);
+    for(int i=0; i < 81; ++i)
+    {
+        v[i] = i;
+    }
+
+    for(int i=0; i < count; ++i)
+    {
+        int r = random(0, v.size() - 1);
+        _map[v[r]] = p;
+        v.erase(v.begin() + r);
+    }
+}
+
+bool CScene::isComplete()
+{
+    //not complete if there is any block that is not full
+    for(size_t i=0; i < 81; ++i)
+    {
+        if(_map[i].value == UNSELECTED)
+            return false;
+    }
+
+    //the number in the block must be valid
+    for(int row=0; row < 9; ++row)
+    {
+        for(int col = 0; col < 9; ++col)
+        {
+            if(!_row_block[row].isValid() || !_column_block[col].isValid() || !_xy_block[row / 3][col / 3].isValid())
+                return false;
+        }
+    }
+
+    return true;
+}
