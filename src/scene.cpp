@@ -55,3 +55,45 @@ void CScene::printUnderLine(int line_no) const
         std::cout << "\u254B" << "\u2501" << ((_cur_point.y == line_no && _cur_point.x == column)?"^":"\u2501") << "\u2501";
     std::cout << "\u254B" << std::endl;
 }
+
+void CScene::init()
+{
+    memset(_map, UNSELECTED, sizeof _map);
+
+    for(int col=0; col < _max_column; ++col)  //column_block refers to all of columns
+    {
+        CBlock column_block;
+
+        for(int row=0; row < _max_column; ++row)
+        {
+            column_block.push_back(_map + row * 9 + col);
+        }
+        _column_block[col] = column_block;
+    }
+
+    for(int row=0; row < _max_column; ++row)  //row_block refers to all of rows
+    {
+        CBlock row_block;
+
+        for(int col=0; col < _max_column; ++col)
+        {
+            row_block.push_back(_map + row * 9 + col);
+        }
+        _row_block[row] = row_block;
+    }
+
+    for(int block_index = 0; block_index < _max_column; ++block_index) //xy_block refers to all of grids, [row][col]
+    {
+        CBlock xy_block;
+
+        int xy_begin = block_index / 3 *27 + block_index % 3 * 3;
+        for(int i=0; i < 3; ++i)
+        {
+            for(int j=0; j < 3; ++j)
+            {
+                xy_block.push_back(_map + xy_begin + i * 9 + j);
+            }
+        }
+        _xy_block[block_index / 3][block_index % 3] = xy_block;
+    }
+}
