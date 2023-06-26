@@ -20,3 +20,38 @@ CScene::~CScene()
     if (keyMap)
         delete keyMap;
 }
+
+void CScene::show() const
+{
+    cls();
+
+    printUnderLine();
+
+    for(int row = 0; row < _max_column; ++row)
+    {
+        CBlock block = _row_block[row];
+        block.print();
+        printUnderLine(row);
+    }
+}
+
+void CScene::setMode(KeyMode mode)
+{
+    switch(mode)
+    {
+        case KeyMode::NORMAL:
+            keyMap = new Normal;
+            break;
+
+        case KeyMode::VIM:
+            keyMap = new Vim;
+            break;
+    }
+}
+
+void CScene::printUnderLine(int line_no) const
+{
+    for(int column = 0; column < 9; ++column)
+        std::cout << "\u254B" << "\u2501" << ((_cur_point.y == line_no && _cur_point.x == column)?"^":"\u2501") << "\u2501";
+    std::cout << "\u254B" << std::endl;
+}
