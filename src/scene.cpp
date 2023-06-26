@@ -221,3 +221,96 @@ void CScene::load(const char *filename)
         _vCommand.emplace_back(this, point, preValue, curValue);
     }
 }
+
+void CScene::play()
+{
+    show();
+
+    char key = '\0';
+    while(1)
+    {
+        key = getch();
+        if(key >= '0' && key <= '9')
+        {
+            CCommand oCommand(this);
+            if(!oCommand.execute(key - '0'))
+            {
+                std::cout << "this number can't be modified." << std::endl;
+            }
+            else
+            {
+                _vCommand.push_back(std::move(oCommand));
+                show();
+                continue;
+            }
+        }
+
+        if(key == keyMap->ESC)
+        {
+            message("quit game ? [Y/N]");
+            std::string strInput;
+            std::cin >> strInput;
+            if(strInput[0] == 'y' || strInput[0] == 'Y')
+            {
+                message("do you want to save the game progress > [Y/N]");
+                std::cin >> strInput;
+                if(strInput[0] == 'y' || strInput[0] == 'Y')
+                {
+                    message("input path of the progress file: ", false);
+                    std::cin >> strInput;
+                    save(strInput.c_str());
+                }
+                exit(0);
+            }
+            else
+            {
+                message("continue.");
+            }
+        }
+        else if(key == keyMap->U)
+        {
+            if(_vCommand.empty())
+                message("no more action to undo.");
+            else
+            {
+                CCommand& oCommand = _vCommand.back();
+                oCommand.undo();
+                _vCommand.pop_back();
+                show();
+            }
+        }
+        else if(key == keyMap->LEFT)
+        {
+            _cur_point.x = (_cur_point.x - 1) < 0 ? 0 : _cur_point.x - 1;
+            show();
+        }
+        else if(key == keyMap->RIGHT)
+        {
+            _cur_point.x = (_cur_point.x + 1) > 8 ? 8 : _cur_point.x -+1;
+            show();
+        }
+        else if(key == keyMap->DOWN)
+        {
+            _cur_point.y = (_cur_point.y + 1) > 8 ? 8 : _cur_point.y + 1;
+            show();
+        }
+        else if(key == keyMap->UP)
+        {
+            _cur_point.y = (_cur_point.y - 1) < 0 ? 0 : _cur_point.y - 1;
+            show();
+        }
+        else if(key == keyMap->ENTER)
+        {
+            if(isComplete())
+            {
+                message("congratilations! you win!");
+                getchar();
+                exit(0);
+            }
+            else
+            {
+                message("sorry, not completed.");
+            }
+        }
+    }
+}
