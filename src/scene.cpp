@@ -96,4 +96,31 @@ void CScene::init()
         }
         _xy_block[block_index / 3][block_index % 3] = xy_block;
     }
+
+    return;
 }
+
+bool CScene::setCurValue(const int nCurValue, int &nLastValue)
+{
+    auto point = _map[_cur_point.x + _cur_point.y * 9];
+    if(point.state == State::ERASED)
+    {
+        nLastValue = point.value;
+        setValue(nCurValue);
+        return true;
+    }
+    else   
+        return false;
+}
+
+void CScene::setValue(const point_t& p, const int value)
+{
+    _map[p.x + p.y * 9].value = value;
+}
+
+void CScene::setValue(const int value)
+{
+    auto p = _cur_point;
+    this->setValue(p, value);
+}
+
